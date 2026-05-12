@@ -1,9 +1,10 @@
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.*;
 
 public class Main {
 
-    public static void main(String[] args){
+    public static void main(String[] args) throws FileNotFoundException {
         Map<String, User> users = new TreeMap<>();
         Map<String, Set<String>> usersIp = new TreeMap<>();
 
@@ -16,7 +17,12 @@ public class Main {
         //Построчно читаем файл в цикле, пока файл не закончится
         while (scanner.hasNextLine()) {
             String line = scanner.nextLine();
+
             String[] data = line.split(";");
+            String ip = data[0];
+            String id = data[1];
+            String fio = data[2];
+            String address = data[3];
 
             // Сохранение ползователя
             users.put(id, new User(id, fio, address));
@@ -44,5 +50,31 @@ public class Main {
         }
         logScanner.close(); //Закрываем scanner после чтения, для освобождения файла и ресурсов
         System.out.println("Файл server.log прочитан.");
+
+        String villainIp = "";
+        int maxCount = 0;
+
+        for (Map.Entry<String, Integer> entry : ipCount.entrySet()){
+            if (entry.getValue() > maxCount){
+                maxCount = entry.getValue();
+                villainIp = entry.getKey();
+            }
+        }
+        String villainId = "";
+
+        for (Map.Entry<String, Set<String>> entry : usersIp.entrySet()){
+            if (entry.getValue().contains(villainIp)){
+                villainId = entry.getKey();
+                break;
+            }
+        }
+
+        User villain = users.get(villainId);
+
+        System.out.println();
+        System.out.println("Предполагаемый злоумышленник:");
+        System.out.println("ФИО: " + villain.getFio());
+        System.out.println("Адрес: " + villain.getAddress());
+        System.out.println("Количество входов: " + maxCount);
     }
 }
